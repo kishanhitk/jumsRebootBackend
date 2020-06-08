@@ -10,7 +10,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const port = 1000;
+const port = process.env.PORT || 1000;
 app.listen(port, console.log(`App is running on ${port}`));
 // app.get("/", getData);
 app.post("/", getData);
