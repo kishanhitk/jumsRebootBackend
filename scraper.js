@@ -4,7 +4,7 @@ const cors = require("cors")({ origin: true });
 exports.getData = async (req, res) => {
   cors(req, res, async () => {
     console.log("Starting Process");
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
 
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
