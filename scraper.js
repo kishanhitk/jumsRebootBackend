@@ -7,10 +7,10 @@ exports.getData = async (req, res) => {
 
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
-    uname = req.body.uname;
+    // uname = req.body.uname;
 
     // console.log(await page.content());
-    await page.screenshot({ path: "screenshot.png" });
+    // await page.screenshot({ path: "screenshot.png" });
     //ID 001811601047
     await page.type("[name=uname]", req.body.uname);
 
@@ -19,7 +19,7 @@ exports.getData = async (req, res) => {
 
     await page.click("[type=submit]");
     await page.waitFor(3000);
-    await page.screenshot({ path: "screenshot.png" });
+    // await page.screenshot({ path: "screenshot.png" });
     const data = await page.evaluate(() => {
       const name = document
         .querySelector(
@@ -37,9 +37,9 @@ exports.getData = async (req, res) => {
       const buttons = [];
       document.querySelectorAll("#submit_button").forEach((a) => {
         buttons.push({ text: a.textContent, link: a.href });
-        console.log({ text: a.textContent, link: a.href });
+        // console.log({ text: a.textContent, link: a.href });
       });
-      console.log(buttons);
+      // console.log(buttons);
       return {
         name: name,
         course: course,
@@ -49,15 +49,15 @@ exports.getData = async (req, res) => {
     });
     str = JSON.stringify(data);
     res.json(data);
-    console.log(data.name);
-    await page.waitFor(3000);
+    // console.log(data.name);
+    // await page.waitFor(1000);
 
-    await page.goto(
-      "http://juadmission.jdvu.ac.in/jums_exam/student_odd_2019/index.jsp"
-    );
+    // await page.goto(
+    //   "http://juadmission.jdvu.ac.in/jums_exam/student_odd_2019/index.jsp"
+    // );
 
-    await page.waitFor(3000);
-    await page.screenshot({ path: "screenshot.png", fullPage: true });
+    // await page.waitFor(3000);
+    // await page.screenshot({ path: "screenshot.png", fullPage: true });
     await browser.close();
   });
 };
