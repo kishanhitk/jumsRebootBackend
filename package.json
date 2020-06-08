@@ -1,10 +1,10 @@
 {
   "name": "puppeteer",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
