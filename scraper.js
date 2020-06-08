@@ -81,7 +81,7 @@ exports.getData = async (req, res) => {
 //PASSWORD 158261ed
 exports.getSemesterData = async (req, res) => {
   cors(req, res, async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
 
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
