@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
-
+const fs = require("fs");
 const { getData, getSemesterData } = require("./scraper");
 app.use(cors());
 app.use(morgan("dev"));
@@ -17,5 +17,9 @@ app.post("/", getData);
 app.get("/test", (req, res) => {
   res.send("Hello");
 });
+app.get("/testImage", (req, res) => {
+  // var data = fs.readFileSync("./screenshot.png");
+  // res.contentType("application/pdf");
+  res.download("./test.pdf");
+});
 app.post("/semester", getSemesterData);
-

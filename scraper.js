@@ -1,10 +1,11 @@
 const puppeteer = require("puppeteer");
+const fs = require("fs");
 const cors = require("cors")({ origin: true });
 
 exports.getData = async (req, res) => {
   cors(req, res, async () => {
     console.log("Starting Process");
-    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
 
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
@@ -81,14 +82,14 @@ exports.getData = async (req, res) => {
 //PASSWORD 158261ed
 exports.getSemesterData = async (req, res) => {
   cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
 
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
-    uname = req.body.uname;
+    // uname = req.body.uname;
 
     // console.log(await page.content());
-    await page.screenshot({ path: "screenshot.png" });
+    // await page.screenshot({ path: "screenshot.png" });
     //ID 001811601047
     await page.type("[name=uname]", req.body.uname);
 
@@ -96,11 +97,11 @@ exports.getSemesterData = async (req, res) => {
     await page.type("[name=pass]", req.body.pass);
 
     await page.click("[type=submit]");
-    await page.waitFor(3000);
-    await page.screenshot({ path: "screenshot.png" });
+    await page.waitFor(1000);
+    // await page.screenshot({ path: "screenshot.png" });
     await page.goto(req.body.url);
-    await page.waitFor(3000);
-    await page.screenshot({ path: "screenshot.png", fullPage: true });
+    await page.waitFor(1000);
+    // await page.screenshot({ path: "screenshot.png", fullPage: true });
     const data = await page.evaluate(() => {
       // const admitCard = document.querySelector(
       //   "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
@@ -114,13 +115,22 @@ exports.getSemesterData = async (req, res) => {
       };
     });
     await page.goto(data.admitCard);
-    await page.waitFor(3000);
-    str = JSON.stringify(data);
-    console.log(await page.content());
-    res.send(await page.content());
-    console.log(data.admitCard);
-    await page.waitFor(3000);
+    // await page.waitFor(3000);
+    // str = JSON.stringify(data);
+    // console.log(await page.content());
+    await page.emulateMediaType("screen");
+    await page.pdf({ path: `${req.body.uname}.pdf` });
+    res.download(`./${req.body.uname}.pdf`);
+    // console.log(data.admitCard);
+    // await page.waitFor(3000);
 
     await browser.close();
+    fs.unlink(`${req.body.uname}.pdf`, function (err) {
+      if (err) {
+        throw err;
+      } else {
+        console.log("Successfully deleted the file.");
+      }
+    });
   });
 };
