@@ -4,7 +4,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
 const fs = require("fs");
-const { getData, getSemesterData } = require("./scraper");
+const { getData, getGradeCard, getAdmitCard } = require("./scraper");
 app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
@@ -22,4 +22,5 @@ app.get("/testImage", (req, res) => {
   // res.contentType("application/pdf");
   res.download("./test.pdf");
 });
-app.post("/semester", getSemesterData);
+app.post("/admitCard", getAdmitCard);
+app.post("/gradeCard", getGradeCard);
