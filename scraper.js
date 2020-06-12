@@ -10,7 +10,7 @@ exports.getData = async (req, res) => {
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
     console.log("Loaded Login Page");
-    // uname = req.body.uname;
+
     var notice = "";
     await page.waitForSelector("table").then(async () => {
       notice = await page.evaluate(() => {
@@ -22,19 +22,16 @@ exports.getData = async (req, res) => {
       });
     });
     console.log(notice);
-    // console.log(await page.content());
-    // await page.screenshot({ path: "screenshot.png" });
-    //ID 001811601047
+
     await page.type("[name=uname]", req.body.uname);
 
-    //PASSWORD 158261ed
     await page.type("[name=pass]", req.body.pass);
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
     await page.waitFor(1000);
     console.log("Loaded Profile Page");
-    // await page.screenshot({ path: "screenshot.png" });
+
     var data = {};
     await page.waitForSelector("table").then(async () => {
       console.log("Populating data");
@@ -58,9 +55,7 @@ exports.getData = async (req, res) => {
         const buttons = [];
         document.querySelectorAll("#submit_button").forEach((a) => {
           buttons.push({ text: a.textContent, link: a.href });
-          // console.log({ text: a.textContent, link: a.href });
         });
-        // console.log(buttons);
 
         console.log("Got Buttons");
         return {
@@ -70,22 +65,13 @@ exports.getData = async (req, res) => {
           imgUrl: imgUrl.src,
         };
       });
-      // console.log(await data);
     });
     console.log("Got Data from Profile Page");
     str = JSON.stringify(data);
     data.notices = notice;
     res.json(data);
     console.log("Sent Response");
-    // console.log(data.name);
-    // await page.waitFor(1000);
 
-    // await page.goto(
-    //   "http://juadmission.jdvu.ac.in/jums_exam/student_odd_2019/index.jsp"
-    // );
-
-    // await page.waitFor(3000);
-    // await page.screenshot({ path: "screenshot.png", fullPage: true });
     await browser.close();
     console.log("Closed Browser");
   });
@@ -99,29 +85,21 @@ exports.getAdmitCard = async (req, res) => {
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
-    // uname = req.body.uname;
 
-    // console.log(await page.content());
-    // await page.screenshot({ path: "screenshot.png" });
-    //ID 001811601047
     await page.type("[name=uname]", req.body.uname);
 
-    //PASSWORD 158261ed
     await page.type("[name=pass]", req.body.pass);
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
     await page.waitFor(1000);
-    // await page.screenshot({ path: "screenshot.png" });
+
     await page.goto(req.body.url);
 
     await page.waitFor(1000);
     console.log("Go to Semester Page");
-    // await page.screenshot({ path: "screenshot.png", fullPage: true });
+
     const data = await page.evaluate(() => {
-      // const admitCard = document.querySelector(
-      //   "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
-      // ).href;
       const admitCard = document.querySelector(
         "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
       ).href;
@@ -132,16 +110,12 @@ exports.getAdmitCard = async (req, res) => {
     });
     await page.goto(data.admitCard);
     console.log("Goto Admit Card URL");
-    // await page.waitFor(3000);
-    // str = JSON.stringify(data);
-    // console.log(await page.content());
+
     await page.emulateMediaType("screen");
     await page.pdf({ path: `${req.body.uname}.pdf` });
     console.log("Coverted to PDF");
     res.download(`./${req.body.uname}.pdf`);
     console.log("Converted to PDF");
-    // console.log(data.admitCard);
-    // await page.waitFor(3000);
 
     await browser.close();
     console.log("Closed Browser");
@@ -161,49 +135,50 @@ exports.getGradeCard = async (req, res) => {
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
-    // uname = req.body.uname;
 
-    // console.log(await page.content());
-    // await page.screenshot({ path: "screenshot.png" });
-    //ID 001811601047
     await page.type("[name=uname]", req.body.uname);
 
-    //PASSWORD 158261ed
     await page.type("[name=pass]", req.body.pass);
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
     await page.waitFor(1000);
-    // await page.screenshot({ path: "screenshot.png" });
     await page.goto(req.body.url);
 
     await page.waitFor(1000);
     console.log("Go to Semester Page");
-    // await page.screenshot({ path: "screenshot.png", fullPage: true });
-    const data = await page.evaluate(() => {
-      // const admitCard = document.querySelector(
-      //   "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
-      // ).href;
-      const gradeCard = document.querySelector(
-        "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(5) > a"
-      ).href;
-      console.log("Got url of Grade Card");
-      return {
-        gradeCard: gradeCard,
-      };
-    });
-    await page.goto(data.gradeCard);
+    var gradeCardUrl;
+    await page
+      .waitForSelector("table")
+      .then(async () => {
+        console.log("Populating data");
+        gradeCardUrl = await page.evaluate(() => {
+          var aTags = document.getElementsByTagName("a");
+
+          for (var i = 0; i < aTags.length; i++) {
+            console.log(aTags[i]);
+            if (aTags[i].textContent.includes("Grade")) {
+              return aTags[i].href;
+              break;
+            }
+          }
+        });
+      })
+      .catch(() => {
+        res.status(400).send("Send not found.");
+      });
+
+    if (!gradeCardUrl) {
+      res.status(400).send(`Result Not Available .${gradeCardUrl}`);
+    }
+    await page.goto(gradeCardUrl);
     console.log("Goto Grade Card Card URL");
-    // await page.waitFor(3000);
-    // str = JSON.stringify(data);
-    // console.log(await page.content());
+
     await page.emulateMediaType("screen");
     await page.pdf({ path: `${req.body.uname}.pdf` });
     console.log("Coverted to PDF");
     res.download(`./${req.body.uname}.pdf`);
     console.log("Converted to PDF");
-    // console.log(data.admitCard);
-    // await page.waitFor(3000);
 
     await browser.close();
     console.log("Closed Browser");
