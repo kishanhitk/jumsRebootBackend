@@ -210,31 +210,35 @@ exports.getAdmitCard = async (req, res) => {
 
     await page.waitFor(1000);
     console.log("Go to Semester Page");
-    var gradeCardUrl;
+    var admitCardurl;
     await page
       .waitForSelector("table")
       .then(async () => {
         console.log("Populating data");
-        gradeCardUrl = await page.evaluate(() => {
-          var aTags = document.getElementsByTagName("a");
+        admitCardurl = await page.evaluate(() => {
+          // var aTags = document.getElementsByTagName("a");
 
-          for (var i = 0; i < aTags.length; i++) {
-            console.log(aTags[i]);
-            if (aTags[i].textContent.includes("Admit")) {
-              return aTags[i].href;
-              break;
-            }
-          }
+          // for (var i = 0; i < aTags.length; i++) {
+          //   console.log(aTags[i]);
+          //   if (aTags[i].textContent.includes("Admit")) {
+          //     return aTags[i].href;
+          //     break;
+          //   }
+          // }
+          var link = document.querySelector(
+            "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
+          ).href;
+          return link;
         });
       })
       .catch(() => {
         res.status(400).send("Admit Card not found.");
       });
 
-    if (!gradeCardUrl) {
-      res.status(400).send(`Admit Card Not Available .${gradeCardUrl}`);
+    if (!admitCardurl) {
+      res.status(400).send(`Admit Card Not Available .${admitCardurl}`);
     }
-    await page.goto(gradeCardUrl);
+    await page.goto(admitCardurl);
     console.log("Goto Admit Card Card URL");
 
     await page.emulateMediaType("screen");
