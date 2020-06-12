@@ -78,56 +78,56 @@ exports.getData = async (req, res) => {
 };
 
 //PASSWORD 158261ed
-exports.getAdmitCard = async (req, res) => {
-  console.log("Started Process");
-  cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
-    console.log("Launched Browser");
-    const page = await browser.newPage();
-    await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
+// exports.getAdmitCard = async (req, res) => {
+//   console.log("Started Process");
+//   cors(req, res, async () => {
+//     const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+//     console.log("Launched Browser");
+//     const page = await browser.newPage();
+//     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
 
-    await page.type("[name=uname]", req.body.uname);
+//     await page.type("[name=uname]", req.body.uname);
 
-    await page.type("[name=pass]", req.body.pass);
+//     await page.type("[name=pass]", req.body.pass);
 
-    await page.click("[type=submit]");
-    console.log("Filled Credentials");
-    await page.waitFor(1000);
+//     await page.click("[type=submit]");
+//     console.log("Filled Credentials");
+//     await page.waitFor(1000);
 
-    await page.goto(req.body.url);
+//     await page.goto(req.body.url);
 
-    await page.waitFor(1000);
-    console.log("Go to Semester Page");
+//     await page.waitFor(1000);
+//     console.log("Go to Semester Page");
 
-    const data = await page.evaluate(() => {
-      const admitCard = document.querySelector(
-        "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
-      ).href;
-      console.log("Got url of Admit Card");
-      return {
-        admitCard: admitCard,
-      };
-    });
-    await page.goto(data.admitCard);
-    console.log("Goto Admit Card URL");
+//     const data = await page.evaluate(() => {
+//       const admitCard = document.querySelector(
+//         "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
+//       ).href;
+//       console.log("Got url of Admit Card");
+//       return {
+//         admitCard: admitCard,
+//       };
+//     });
+//     await page.goto(data.admitCard);
+//     console.log("Goto Admit Card URL");
 
-    await page.emulateMediaType("screen");
-    await page.pdf({ path: `${req.body.uname}.pdf` });
-    console.log("Coverted to PDF");
-    res.download(`./${req.body.uname}.pdf`);
-    console.log("Converted to PDF");
+//     await page.emulateMediaType("screen");
+//     await page.pdf({ path: `${req.body.uname}.pdf` });
+//     console.log("Coverted to PDF");
+//     res.download(`./${req.body.uname}.pdf`);
+//     console.log("Converted to PDF");
 
-    await browser.close();
-    console.log("Closed Browser");
-    fs.unlink(`${req.body.uname}.pdf`, function (err) {
-      if (err) {
-        throw err;
-      } else {
-        console.log("Successfully deleted the file.");
-      }
-    });
-  });
-};
+//     await browser.close();
+//     console.log("Closed Browser");
+//     fs.unlink(`${req.body.uname}.pdf`, function (err) {
+//       if (err) {
+//         throw err;
+//       } else {
+//         console.log("Successfully deleted the file.");
+//       }
+//     });
+//   });
+// };
 exports.getGradeCard = async (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
@@ -173,6 +173,69 @@ exports.getGradeCard = async (req, res) => {
     }
     await page.goto(gradeCardUrl);
     console.log("Goto Grade Card Card URL");
+
+    await page.emulateMediaType("screen");
+    await page.pdf({ path: `${req.body.uname}.pdf` });
+    console.log("Coverted to PDF");
+    res.download(`./${req.body.uname}.pdf`);
+    console.log("Converted to PDF");
+
+    await browser.close();
+    console.log("Closed Browser");
+    fs.unlink(`${req.body.uname}.pdf`, function (err) {
+      if (err) {
+        throw err;
+      } else {
+        console.log("Successfully deleted the file.");
+      }
+    });
+  });
+};
+exports.getAdmitCard = async (req, res) => {
+  console.log("Started Process");
+  cors(req, res, async () => {
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    console.log("Launched Browser");
+    const page = await browser.newPage();
+    await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
+
+    await page.type("[name=uname]", req.body.uname);
+
+    await page.type("[name=pass]", req.body.pass);
+
+    await page.click("[type=submit]");
+    console.log("Filled Credentials");
+    await page.waitFor(1000);
+    await page.goto(req.body.url);
+
+    await page.waitFor(1000);
+    console.log("Go to Semester Page");
+    var gradeCardUrl;
+    await page
+      .waitForSelector("table")
+      .then(async () => {
+        console.log("Populating data");
+        gradeCardUrl = await page.evaluate(() => {
+          var aTags = document.getElementsByTagName("a");
+
+          for (var i = 0; i < aTags.length; i++) {
+            console.log(aTags[i]);
+            if (aTags[i].textContent.includes("Admit")) {
+              return aTags[i].href;
+              break;
+            }
+          }
+        });
+      })
+      .catch(() => {
+        res.status(400).send("Admit Card not found.");
+      });
+
+    if (!gradeCardUrl) {
+      res.status(400).send(`Admit Card Not Available .${gradeCardUrl}`);
+    }
+    await page.goto(gradeCardUrl);
+    console.log("Goto Admit Card Card URL");
 
     await page.emulateMediaType("screen");
     await page.pdf({ path: `${req.body.uname}.pdf` });
