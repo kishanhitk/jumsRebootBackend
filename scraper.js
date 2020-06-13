@@ -21,7 +21,6 @@ exports.getData = async (req, res) => {
         return notice;
       });
     });
-    console.log(notice);
 
     await page.type("[name=uname]", req.body.uname);
 
