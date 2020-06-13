@@ -4,7 +4,12 @@ const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
 const fs = require("fs");
-const { getData, getGradeCard, getAdmitCard } = require("./scraper");
+const {
+  getData,
+  getGradeCard,
+  getAdmitCard,
+  forgotPassword,
+} = require("./scraper");
 app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
@@ -24,3 +29,4 @@ app.get("/testImage", (req, res) => {
 });
 app.post("/admitCard", getAdmitCard);
 app.post("/gradeCard", getGradeCard);
+app.post("/forgotPassword", forgotPassword);

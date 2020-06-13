@@ -78,56 +78,7 @@ exports.getData = async (req, res) => {
 };
 
 //PASSWORD 158261ed
-// exports.getAdmitCard = async (req, res) => {
-//   console.log("Started Process");
-//   cors(req, res, async () => {
-//     const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
-//     console.log("Launched Browser");
-//     const page = await browser.newPage();
-//     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
 
-//     await page.type("[name=uname]", req.body.uname);
-
-//     await page.type("[name=pass]", req.body.pass);
-
-//     await page.click("[type=submit]");
-//     console.log("Filled Credentials");
-//     await page.waitFor(1000);
-
-//     await page.goto(req.body.url);
-
-//     await page.waitFor(1000);
-//     console.log("Go to Semester Page");
-
-//     const data = await page.evaluate(() => {
-//       const admitCard = document.querySelector(
-//         "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
-//       ).href;
-//       console.log("Got url of Admit Card");
-//       return {
-//         admitCard: admitCard,
-//       };
-//     });
-//     await page.goto(data.admitCard);
-//     console.log("Goto Admit Card URL");
-
-//     await page.emulateMediaType("screen");
-//     await page.pdf({ path: `${req.body.uname}.pdf` });
-//     console.log("Coverted to PDF");
-//     res.download(`./${req.body.uname}.pdf`);
-//     console.log("Converted to PDF");
-
-//     await browser.close();
-//     console.log("Closed Browser");
-//     fs.unlink(`${req.body.uname}.pdf`, function (err) {
-//       if (err) {
-//         throw err;
-//       } else {
-//         console.log("Successfully deleted the file.");
-//       }
-//     });
-//   });
-// };
 exports.getGradeCard = async (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
@@ -205,10 +156,10 @@ exports.getAdmitCard = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    await page.waitFor(1000);
+    // await page.waitFor(1000);
     await page.goto(req.body.url);
 
-    await page.waitFor(1000);
+    // await page.waitFor(1000);
     console.log("Go to Semester Page");
     var admitCardurl;
     await page
@@ -216,15 +167,6 @@ exports.getAdmitCard = async (req, res) => {
       .then(async () => {
         console.log("Populating data");
         admitCardurl = await page.evaluate(() => {
-          // var aTags = document.getElementsByTagName("a");
-
-          // for (var i = 0; i < aTags.length; i++) {
-          //   console.log(aTags[i]);
-          //   if (aTags[i].textContent.includes("Admit")) {
-          //     return aTags[i].href;
-          //     break;
-          //   }
-          // }
           var link = document.querySelector(
             "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
           ).href;
@@ -256,5 +198,43 @@ exports.getAdmitCard = async (req, res) => {
         console.log("Successfully deleted the file.");
       }
     });
+  });
+};
+
+exports.forgotPassword = async (req, res) => {
+  console.log("Started Process");
+  cors(req, res, async () => {
+    const browser = await puppeteer.launch({ args: ["--no=sandbox"] });
+    console.log("Launched Browser");
+    const page = await browser.newPage();
+    await page.goto(
+      "http://juadmission.jdvu.ac.in/jums_exam/reset_password/index.jsp"
+    );
+    await page.type("[name=roll_no]", req.body.uname);
+    await page.type("[name=mobile_no]", req.body.mobile);
+    await page.click("[type=submit]");
+    console.log("Filled Credentials");
+    var newPassword;
+    await page
+      .waitForSelector("b")
+      .then(async () => {
+        console.log("Populating data");
+        newPassword = await page.evaluate(() => {
+          var text = document
+            .querySelector("#content > b")
+            .textContent.trim()
+            .slice(0, 40);
+          return text;
+        });
+      })
+      .then(() => {
+        console.log(newPassword);
+        res.send(newPassword);
+      })
+      .catch(() => {
+        res.status(400).send("Can not reset Password.");
+      });
+    await browser.close();
+    console.log("Browser Closed");
   });
 };
