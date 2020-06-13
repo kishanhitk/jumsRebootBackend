@@ -115,12 +115,10 @@ exports.getGradeCard = async (req, res) => {
         });
       })
       .catch(() => {
-        res.status(400).send("Send not found.");
+        res.status(400).send("Result not found.");
       });
 
-    if (!gradeCardUrl) {
-      res.status(400).send(`Result Not Available .${gradeCardUrl}`);
-    }
+    
     await page.goto(gradeCardUrl);
     console.log("Goto Grade Card Card URL");
 
@@ -169,16 +167,18 @@ exports.getAdmitCard = async (req, res) => {
           var link = document.querySelector(
             "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
           ).href;
+          console.log(link);
           return link;
         });
+        console.log(admitCardurl);
       })
       .catch(() => {
         res.status(400).send("Admit Card not found.");
       });
 
-    if (!admitCardurl) {
-      res.status(400).send(`Admit Card Not Available .${admitCardurl}`);
-    }
+    // if (!admitCardurl) {
+    //   res.status(400).send(`Admit Card Not Available .${admitCardurl}`);
+    // }
     await page.goto(admitCardurl);
     console.log("Goto Admit Card Card URL");
 
