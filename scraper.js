@@ -29,7 +29,7 @@ exports.getData = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    await page.waitFor(1000);
+    // await page.waitFor(1000);
     console.log("Loaded Profile Page");
 
     var data = {};
@@ -93,10 +93,10 @@ exports.getGradeCard = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    await page.waitFor(1000);
+    // await page.waitFor(1000);
     await page.goto(req.body.url);
 
-    await page.waitFor(1000);
+    // await page.waitFor(1000);
     console.log("Go to Semester Page");
     var gradeCardUrl;
     await page
