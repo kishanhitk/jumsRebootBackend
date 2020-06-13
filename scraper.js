@@ -204,7 +204,7 @@ exports.getAdmitCard = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ["--no=sandbox"] });
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto(
