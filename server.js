@@ -22,11 +22,11 @@ app.post("/", getData);
 app.get("/test", (req, res) => {
   res.send("Hello");
 });
-app.get("/testImage", (req, res) => {
-  // var data = fs.readFileSync("./screenshot.png");
-  // res.contentType("application/pdf");
-  res.download("./test.pdf");
-});
+// app.get("/testImage", (req, res) => {
+//   // var data = fs.readFileSync("./screenshot.png");
+//   // res.contentType("application/pdf");
+//   res.download("./test.pdf");
+// });
 app.post("/admitCard", getAdmitCard);
 app.post("/gradeCard", getGradeCard);
 app.post("/forgotPassword", forgotPassword);

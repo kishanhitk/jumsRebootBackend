@@ -92,7 +92,7 @@ exports.getGradeCard = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    // await page.waitFor(1000);
+    await page.waitFor(1000);
     await page.goto(req.body.url);
 
     // await page.waitFor(1000);
@@ -118,7 +118,6 @@ exports.getGradeCard = async (req, res) => {
         res.status(400).send("Result not found.");
       });
 
-    
     await page.goto(gradeCardUrl);
     console.log("Goto Grade Card Card URL");
 
@@ -148,16 +147,19 @@ exports.getAdmitCard = async (req, res) => {
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
 
     await page.type("[name=uname]", req.body.uname);
+    console.log(req.body.uname);
+    console.log(req.body.pass);
 
     await page.type("[name=pass]", req.body.pass);
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    // await page.waitFor(1000);
+    await page.waitFor(1000);
     await page.goto(req.body.url);
 
     // await page.waitFor(1000);
     console.log("Go to Semester Page");
+    await page.screenshot({ path: "screenshot.png" });
     var admitCardurl;
     await page
       .waitForSelector("table")
