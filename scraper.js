@@ -11,16 +11,7 @@ exports.getData = async (req, res) => {
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
     console.log("Loaded Login Page");
 
-    var notice = "";
-    await page.waitForSelector("table").then(async () => {
-      notice = await page.evaluate(() => {
-        const notice = document
-          .querySelector("body > table > tbody > tr > td > font > div")
-          .innerText.trim()
-          .split("\n\n");
-        return notice;
-      });
-    });
+
 
     await page.type("[name=uname]", req.body.uname);
 
@@ -67,7 +58,7 @@ exports.getData = async (req, res) => {
     });
     console.log("Got Data from Profile Page");
     str = JSON.stringify(data);
-    data.notices = notice;
+    
     res.json(data);
     console.log("Sent Response");
 
