@@ -257,7 +257,7 @@ exports.getNotices = (req, res) => {
         return notice;
       });
     });
-    res.send(notice);
+    res.json({ notices: notice });
     await browser.close();
   });
 };
