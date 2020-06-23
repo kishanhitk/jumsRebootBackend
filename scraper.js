@@ -239,3 +239,25 @@ exports.forgotPassword = async (req, res) => {
     console.log("Browser Closed");
   });
 };
+
+exports.getNotices = (req, res) => {
+  console.log("Started Process");
+  cors(req, res, async () => {
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    console.log("Launched Browser");
+    const page = await browser.newPage();
+    await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
+    var notice = "";
+    await page.waitForSelector("table").then(async () => {
+      notice = await page.evaluate(() => {
+        const notice = document
+          .querySelector("body > table > tbody > tr > td > font > div")
+          .innerText.trim()
+          .split("\n\n");
+        return notice;
+      });
+    });
+    res.send(notice);
+    await browser.close();
+  });
+};
