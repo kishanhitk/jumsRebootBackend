@@ -18,13 +18,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 1000;
 app.listen(port, console.log(`App is running on ${port}`)).setTimeout(0);
-// app.get("/", getData);
-app.post("/", getData);
+
+//Test Route
 app.get("/test", (req, res) => {
   res.send("Hello");
 });
 
-app.post("/admitCard", getAdmitCard);
-app.post("/gradeCard", getGradeCard);
+//Get all data of the student when logging in. Data includes - Name, ImageURL, semester name and semester page url they have registered for.
+app.post("/", getData);
+
+//Route for resetting password.
 app.post("/forgotPassword", forgotPassword);
+
+//Route to get admit card of a particluar semester.
+app.post("/admitCard", getAdmitCard);
+
+//Route to get grade card of a particular semester.
+app.post("/gradeCard", getGradeCard);
+
+//Route to get notices.
 app.get("/notices", getNotices);

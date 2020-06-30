@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const fs = require("fs");
 const cors = require("cors")({ origin: true });
 
+//Get all data of the student when logging in. Data includes - Name, ImageURL, semester name and semester page url they have registered for.
 exports.getData = async (req, res) => {
   cors(req, res, async () => {
     console.log("Starting Process");
@@ -10,8 +11,6 @@ exports.getData = async (req, res) => {
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
     console.log("Loaded Login Page");
-
-
 
     await page.type("[name=uname]", req.body.uname);
 
@@ -47,7 +46,7 @@ exports.getData = async (req, res) => {
           buttons.push({ text: a.textContent, link: a.href });
         });
 
-        console.log("Got Buttons");
+        console.log("Got Buttons(Link for semester page)");
         return {
           name: name,
           course: course,
@@ -58,7 +57,7 @@ exports.getData = async (req, res) => {
     });
     console.log("Got Data from Profile Page");
     str = JSON.stringify(data);
-    
+
     res.json(data);
     console.log("Sent Response");
 
@@ -66,8 +65,6 @@ exports.getData = async (req, res) => {
     console.log("Closed Browser");
   });
 };
-
-//PASSWORD 158261ed
 
 exports.getGradeCard = async (req, res) => {
   console.log("Started Process");
@@ -86,7 +83,6 @@ exports.getGradeCard = async (req, res) => {
     await page.waitFor(1000);
     await page.goto(req.body.url);
 
-    // await page.waitFor(1000);
     console.log("Go to Semester Page");
     var gradeCardUrl;
     await page
@@ -148,7 +144,6 @@ exports.getAdmitCard = async (req, res) => {
     await page.waitFor(1000);
     await page.goto(req.body.url);
 
-    // await page.waitFor(1000);
     console.log("Go to Semester Page");
     await page.screenshot({ path: "screenshot.png" });
     var admitCardurl;
@@ -168,10 +163,6 @@ exports.getAdmitCard = async (req, res) => {
       .catch(() => {
         res.status(400).send("Admit Card not found.");
       });
-
-    // if (!admitCardurl) {
-    //   res.status(400).send(`Admit Card Not Available .${admitCardurl}`);
-    // }
     await page.goto(admitCardurl);
     console.log("Goto Admit Card Card URL");
 
