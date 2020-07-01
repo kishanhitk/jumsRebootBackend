@@ -91,7 +91,7 @@ exports.getGradeCard = async (req, res) => {
         var aTags = document.getElementsByTagName("a");
 
         for (var i = 0; i < aTags.length; i++) {
-          console.log(aTags[i]);
+          // console.log(aTags[i]);
           if (aTags[i].textContent.includes("Grade")) {
             return aTags[i].href;
             break;
@@ -102,11 +102,11 @@ exports.getGradeCard = async (req, res) => {
         await page.goto(gradeCardUrl);
         console.log("Goto Grade Card Card URL");
 
-        await page.emulateMediaType("screen");
+        await page.emulateMediaType("print");
         await page.pdf({ path: `${req.body.uname}.pdf` });
         console.log("Coverted to PDF");
         res.download(`./${req.body.uname}.pdf`);
-        console.log("Converted to PDF");
+        console.log("Sent download response PDF");
 
         await browser.close();
         console.log("Closed Browser");
@@ -119,8 +119,12 @@ exports.getGradeCard = async (req, res) => {
         });
       })
 
-      .catch(() => {
+      .catch(async (e) => {
+        console.log("Error occured" + e);
+        await browser.close();
+        console.log("Closed Browser");
         res.status(400).send("Result not found.");
+        console.log("Sent error response");
       });
   });
 };
@@ -133,8 +137,7 @@ exports.getAdmitCard = async (req, res) => {
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
 
     await page.type("[name=uname]", req.body.uname);
-    console.log(req.body.uname);
-    console.log(req.body.pass);
+  
 
     await page.type("[name=pass]", req.body.pass);
 
@@ -145,41 +148,43 @@ exports.getAdmitCard = async (req, res) => {
 
     console.log("Go to Semester Page");
 
-    var admitCardurl;
-    await page
-      .waitForSelector("table")
-      .then(async () => {
-        console.log("Populating data");
-        admitCardurl = await page.evaluate(() => {
-          var link = document.querySelector(
-            "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
-          ).href;
-          console.log(link);
-          return link;
-        });
-        console.log(admitCardurl);
+    console.log("Populating data");
+    admitCardurl = await page
+      .evaluate(() => {
+        var link = document.querySelector(
+          "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > div > table > tbody > tr > td:nth-child(4) > a"
+        ).href;
+
+        return link;
       })
-      .catch(() => {
+      .then(async (admitCardurl) => {
+        await page.goto(admitCardurl);
+        console.log("Goto Admit Card Card URL");
+
+        await page.emulateMediaType("print");
+        await page.pdf({ path: `${req.body.uname}.pdf` });
+        console.log("Coverted to PDF");
+        res.download(`./${req.body.uname}.pdf`);
+        console.log("Sent download PDF response");
+
+        await browser.close();
+        console.log("Closed Browser");
+        fs.unlink(`${req.body.uname}.pdf`, function (err) {
+          if (err) {
+            throw err;
+          } else {
+            console.log("Successfully deleted the file.");
+          }
+        });
+      })
+
+      .catch(async (e) => {
+        console.log("Error occured" + e);
+        await browser.close();
+        console.log("Closed Browser");
         res.status(400).send("Admit Card not found.");
+        console.log("Sent error response");
       });
-    await page.goto(admitCardurl);
-    console.log("Goto Admit Card Card URL");
-
-    await page.emulateMediaType("print");
-    await page.pdf({ path: `${req.body.uname}.pdf` });
-    console.log("Coverted to PDF");
-    res.download(`./${req.body.uname}.pdf`);
-    console.log("Converted to PDF");
-
-    await browser.close();
-    console.log("Closed Browser");
-    fs.unlink(`${req.body.uname}.pdf`, function (err) {
-      if (err) {
-        throw err;
-      } else {
-        console.log("Successfully deleted the file.");
-      }
-    });
   });
 };
 
