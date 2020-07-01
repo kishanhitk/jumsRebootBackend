@@ -84,45 +84,44 @@ exports.getGradeCard = async (req, res) => {
     await page.goto(req.body.url);
 
     console.log("Go to Semester Page");
-    var gradeCardUrl;
-    await page
-      .waitForSelector("table")
-      .then(async () => {
-        console.log("Populating data");
-        gradeCardUrl = await page.evaluate(() => {
-          var aTags = document.getElementsByTagName("a");
 
-          for (var i = 0; i < aTags.length; i++) {
-            console.log(aTags[i]);
-            if (aTags[i].textContent.includes("Grade")) {
-              return aTags[i].href;
-              break;
-            }
+    console.log("Populating data");
+    gradeCardUrl = await page
+      .evaluate(() => {
+        var aTags = document.getElementsByTagName("a");
+
+        for (var i = 0; i < aTags.length; i++) {
+          console.log(aTags[i]);
+          if (aTags[i].textContent.includes("Grade")) {
+            return aTags[i].href;
+            break;
+          }
+        }
+      })
+      .then(async (gradeCardUrl) => {
+        await page.goto(gradeCardUrl);
+        console.log("Goto Grade Card Card URL");
+
+        await page.emulateMediaType("screen");
+        await page.pdf({ path: `${req.body.uname}.pdf` });
+        console.log("Coverted to PDF");
+        res.download(`./${req.body.uname}.pdf`);
+        console.log("Converted to PDF");
+
+        await browser.close();
+        console.log("Closed Browser");
+        fs.unlink(`${req.body.uname}.pdf`, function (err) {
+          if (err) {
+            throw err;
+          } else {
+            console.log("Successfully deleted the file.");
           }
         });
       })
+
       .catch(() => {
         res.status(400).send("Result not found.");
       });
-
-    await page.goto(gradeCardUrl);
-    console.log("Goto Grade Card Card URL");
-
-    await page.emulateMediaType("screen");
-    await page.pdf({ path: `${req.body.uname}.pdf` });
-    console.log("Coverted to PDF");
-    res.download(`./${req.body.uname}.pdf`);
-    console.log("Converted to PDF");
-
-    await browser.close();
-    console.log("Closed Browser");
-    fs.unlink(`${req.body.uname}.pdf`, function (err) {
-      if (err) {
-        throw err;
-      } else {
-        console.log("Successfully deleted the file.");
-      }
-    });
   });
 };
 exports.getAdmitCard = async (req, res) => {
@@ -145,7 +144,7 @@ exports.getAdmitCard = async (req, res) => {
     await page.goto(req.body.url);
 
     console.log("Go to Semester Page");
-    await page.screenshot({ path: "screenshot.png" });
+
     var admitCardurl;
     await page
       .waitForSelector("table")
@@ -166,7 +165,7 @@ exports.getAdmitCard = async (req, res) => {
     await page.goto(admitCardurl);
     console.log("Goto Admit Card Card URL");
 
-    await page.emulateMediaType("screen");
+    await page.emulateMediaType("print");
     await page.pdf({ path: `${req.body.uname}.pdf` });
     console.log("Coverted to PDF");
     res.download(`./${req.body.uname}.pdf`);
