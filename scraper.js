@@ -18,9 +18,9 @@ exports.getData = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    await page.waitFor(1000);
+    await page.waitFor(3000);
     console.log("Loaded Profile Page");
-
+    await page.screenshot({ path: "screenshot.png" });
     console.log("Populating data");
     data = await page
       .evaluate(() => {
