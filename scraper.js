@@ -18,13 +18,12 @@ exports.getData = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    // await page.waitFor(1000);
+    await page.waitFor(1000);
     console.log("Loaded Profile Page");
 
-    var data = {};
-    await page.waitForSelector("table").then(async () => {
-      console.log("Populating data");
-      data = await page.evaluate(() => {
+    console.log("Populating data");
+    data = await page
+      .evaluate(() => {
         const name = document
           .querySelector(
             "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(1) > table > tbody > tr:nth-child(1) > td:nth-child(2)"
@@ -53,16 +52,24 @@ exports.getData = async (req, res) => {
           buttons: buttons,
           imgUrl: imgUrl.src,
         };
+      })
+      .then(async (data) => {
+        console.log("Got Data from Profile Page");
+        str = JSON.stringify(data);
+
+        res.json(data);
+        console.log("Sent Response");
+
+        await browser.close();
+        console.log("Closed Browser");
+      })
+      .catch(async (e) => {
+        console.log("Error occured" + e);
+        await browser.close();
+        console.log("Closed Browser");
+        res.status(400).send("Error loggin in");
+        console.log("Sent error response");
       });
-    });
-    console.log("Got Data from Profile Page");
-    str = JSON.stringify(data);
-
-    res.json(data);
-    console.log("Sent Response");
-
-    await browser.close();
-    console.log("Closed Browser");
   });
 };
 
@@ -91,7 +98,6 @@ exports.getGradeCard = async (req, res) => {
         var aTags = document.getElementsByTagName("a");
 
         for (var i = 0; i < aTags.length; i++) {
-          // console.log(aTags[i]);
           if (aTags[i].textContent.includes("Grade")) {
             return aTags[i].href;
             break;
@@ -137,7 +143,6 @@ exports.getAdmitCard = async (req, res) => {
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
 
     await page.type("[name=uname]", req.body.uname);
-  
 
     await page.type("[name=pass]", req.body.pass);
 
