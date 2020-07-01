@@ -197,22 +197,19 @@ exports.forgotPassword = async (req, res) => {
     await page.type("[name=mobile_no]", req.body.mobile);
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    var newPassword;
+    await page.waitFor(1000);
+    console.log("Populating data");
     await page
-      .waitForSelector("b")
-      .then(async () => {
-        console.log("Populating data");
-        newPassword = await page.evaluate(() => {
-          var text = document
-            .querySelector("#content > b")
-            .textContent.trim()
-            .slice(0, 40);
-          return text;
-        });
+      .evaluate(() => {
+        var newPass = document
+          .querySelector("#content > b")
+          .textContent.trim()
+          .slice(0, 40);
+
+        return newPass;
       })
-      .then(() => {
-        console.log(newPassword);
-        res.send(newPassword);
+      .then((newPass) => {
+        res.send(newPass);
       })
       .catch(() => {
         res.status(400).send("Can not reset Password.");
