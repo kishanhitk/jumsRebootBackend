@@ -18,7 +18,8 @@ exports.getData = async (req, res) => {
 
     await page.click("[type=submit]");
     console.log("Filled Credentials");
-    await page.waitFor(6000);
+    // await page.waitFor(6000);
+    await page.waitForNavigation("domcontentloaded");
     console.log("Loaded Profile Page");
     console.log("Populating data");
     data = await page
