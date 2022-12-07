@@ -11,13 +11,22 @@ const {
   forgotPassword,
   getNotices,
 } = require("./scraper");
-app.use(cors());
-app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 1000;
-app.listen(port, console.log(`App is running on ${port}`)).setTimeout(0);
+// Use the CORS middleware to allow cross-origin requests
+app.use(cors());
+
+// Use the Morgan middleware to log requests to the console
+// Set the log level to "combined" to include useful information like the request method, URL, response status code, and response time
+app.use(morgan("combined"));
+
+// Use the body-parser middleware to parse JSON request bodies
+app.use(bodyParser.json());
+
+// Set the port number for the app to the value of the PORT environment variable or 3000 if the variable is not set
+// Use the timeout method of the Server object to set the timeout for the app to 0
+const port = process.env.PORT || 3000;
+const server = app.listen(port, console.log(`App is running on ${port}`));
+server.timeout = 0;
 
 //Test Route
 app.get("/test", (req, res) => {
