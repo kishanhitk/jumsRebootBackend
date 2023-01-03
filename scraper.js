@@ -7,7 +7,10 @@ exports.getData = async (req, res) => {
   try {
     cors(req, res, async () => {
       console.log("Starting Process");
-      const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+      const browser = await puppeteer.launch({
+        executablePath: "google-chrome-stable",
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
 
       const page = await browser.newPage();
       await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
