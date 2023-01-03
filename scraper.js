@@ -85,7 +85,10 @@ exports.getData = async (req, res) => {
 exports.getGradeCard = async (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    const browser = await puppeteer.launch({
+      executablePath: "google-chrome-stable",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
@@ -146,7 +149,10 @@ exports.getGradeCard = async (req, res) => {
 exports.getAdmitCard = async (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    const browser = await puppeteer.launch({
+      executablePath: "google-chrome-stable",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
@@ -205,7 +211,10 @@ exports.getAdmitCard = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    const browser = await puppeteer.launch({
+      executablePath: "google-chrome-stable",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto(
@@ -240,7 +249,10 @@ exports.forgotPassword = async (req, res) => {
 exports.getNotices = (req, res) => {
   console.log("Started Process");
   cors(req, res, async () => {
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+    const browser = await puppeteer.launch({
+      executablePath: "google-chrome-stable",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     console.log("Launched Browser");
     const page = await browser.newPage();
     await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
