@@ -4,73 +4,79 @@ const cors = require("cors")({ origin: true });
 
 //Get all data of the student when logging in. Data includes - Name, ImageURL, semester name and semester page url they have registered for.
 exports.getData = async (req, res) => {
-  cors(req, res, async () => {
-    console.log("Starting Process");
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+  try {
+    cors(req, res, async () => {
+      console.log("Starting Process");
+      const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
 
-    const page = await browser.newPage();
-    await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
-    console.log("Loaded Login Page");
+      const page = await browser.newPage();
+      await page.goto("http://juadmission.jdvu.ac.in/jums_exam/");
+      console.log("Loaded Login Page");
 
-    await page.type("[name=uname]", req.body.uname);
+      await page.type("[name=uname]", req.body.uname);
 
-    await page.type("[name=pass]", req.body.pass);
+      await page.type("[name=pass]", req.body.pass);
 
-    await page.click("[type=submit]");
-    console.log("Filled Credentials");
-    // await page.waitFor(6000);
-    await page.waitForNavigation("domcontentloaded");
-    console.log("Loaded Profile Page");
-    console.log("Populating data");
-    data = await page
-      .evaluate(() => {
-        const name = document
-          .querySelector(
-            "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(1) > table > tbody > tr:nth-child(1) > td:nth-child(2)"
-          )
-          .textContent.trim();
-        console.log("Got name");
-        const course = document
-          .querySelector(
-            "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(1) > table > tbody > tr:nth-child(3) > td:nth-child(2)"
-          )
-          .textContent.trim();
-        console.log("Got Courses");
-        const imgUrl = document.querySelector(
-          "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(2) > img"
-        );
-        console.log("Got imgUrl");
-        const buttons = [];
-        document.querySelectorAll("#submit_button").forEach((a) => {
-          buttons.push({ text: a.textContent, link: a.href });
+      await page.click("[type=submit]");
+      console.log("Filled Credentials");
+      // await page.waitFor(6000);
+      await page.waitForNavigation("domcontentloaded");
+      console.log("Loaded Profile Page");
+      console.log("Populating data");
+      data = await page
+        .evaluate(() => {
+          const name = document
+            .querySelector(
+              "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(1) > table > tbody > tr:nth-child(1) > td:nth-child(2)"
+            )
+            .textContent.trim();
+          console.log("Got name");
+          const course = document
+            .querySelector(
+              "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(1) > table > tbody > tr:nth-child(3) > td:nth-child(2)"
+            )
+            .textContent.trim();
+          console.log("Got Courses");
+          const imgUrl = document.querySelector(
+            "body > div.easyui-layout.layout.easyui-fluid > div.panel.layout-panel.layout-panel-center > div.panel-body.layout-body > table > tbody > tr > td:nth-child(2) > img"
+          );
+          console.log("Got imgUrl");
+          const buttons = [];
+          document.querySelectorAll("#submit_button").forEach((a) => {
+            buttons.push({ text: a.textContent, link: a.href });
+          });
+
+          console.log("Got Buttons(Link for semester page)");
+          return {
+            name: name,
+            course: course,
+            buttons: buttons,
+            imgUrl: imgUrl.src,
+          };
+        })
+        .then(async (data) => {
+          console.log("Got Data from Profile Page");
+          str = JSON.stringify(data);
+
+          res.json(data);
+          console.log("Sent Response");
+
+          await browser.close();
+          console.log("Closed Browser");
+        })
+        .catch(async (e) => {
+          console.log("Error occured" + e);
+          await browser.close();
+          console.log("Closed Browser");
+          res.status(400).send("Error loggin in");
+          console.log("Sent error response");
         });
-
-        console.log("Got Buttons(Link for semester page)");
-        return {
-          name: name,
-          course: course,
-          buttons: buttons,
-          imgUrl: imgUrl.src,
-        };
-      })
-      .then(async (data) => {
-        console.log("Got Data from Profile Page");
-        str = JSON.stringify(data);
-
-        res.json(data);
-        console.log("Sent Response");
-
-        await browser.close();
-        console.log("Closed Browser");
-      })
-      .catch(async (e) => {
-        console.log("Error occured" + e);
-        await browser.close();
-        console.log("Closed Browser");
-        res.status(400).send("Error loggin in");
-        console.log("Sent error response");
-      });
-  });
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Error loggin in");
+    console.log("Sent error response");
+  }
 };
 
 exports.getGradeCard = async (req, res) => {

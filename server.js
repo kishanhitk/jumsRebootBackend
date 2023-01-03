@@ -11,6 +11,7 @@ const {
   forgotPassword,
   getNotices,
 } = require("./scraper");
+const redisCacheMiddleware = require("./redisCacheMiddleware");
 app.use(cors());
 app.use(morgan("dev"));
 app.use(bodyParser.json());
@@ -25,7 +26,7 @@ app.get("/test", (req, res) => {
 });
 
 //Get all data of the student when logging in. Data includes - Name, ImageURL, semester name and semester page url they have registered for.
-app.post("/", getData);
+app.post("/", redisCacheMiddleware, getData);
 
 //Route for resetting password.
 app.post("/forgotPassword", forgotPassword);
